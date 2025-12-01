@@ -2,65 +2,74 @@ name: CI
 
 on:
   push:
-    branches: ["main"]
+    branches: [master]
   pull_request:
-  workflow_dispatch:
-
-env:
-  CARGO_TERM_COLOR: always
+    branches: [master]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest-16-cores
-
+  rust_fmt:
+    name: Rustfmt
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Get nightly toolchain version
+        id: nightly
+        run: echo "version=$(make nightly-version)" >> $GITHUB_OUTPUT
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.nightly.outputs.version }}
+          components: rustfmt
+      - name: Run format
+        run: make format
 
-      - name: Cache cargo + toolchains
-        uses: actions/cache@v4
+  rust_clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            ~/.rustup/toolchains
-            ~/.rustup/update-hashes
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: cargo-clippy-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
-            ${{ runner.os }}-cargo-
-
-      - name: Get Rust version from rust-toolchain.toml
-        run: |
-          RUST_VERSION="$(grep -oP 'channel = "\K\d\.\d+\.\d+(?=")' rust-toolchain.toml)"
-          echo "RUST_VERSION=$RUST_VERSION" >> "$GITHUB_ENV"
-
-      - name: Install Rust nightly (fmt only)
-        uses: dtolnay/rust-toolchain@stable
+            cargo-clippy-
+      - name: Get nightly toolchain version
+        id: nightly
+        run: echo "version=$(make nightly-version)" >> $GITHUB_OUTPUT
+      - uses: dtolnay/rust-toolchain@master
         with:
-          toolchain: nightly
-          components: rustfmt
-
-      - name: Install Rust stable with clippy
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: ${{ env.RUST_VERSION }}
+          toolchain: ${{ steps.nightly.outputs.version }}
           components: clippy
-
-      - name: Check Cargo.lock frozen
-        run: |
-          cargo tree
-          git checkout Cargo.lock
-          cargo tree --frozen --offline
-
-      - name: Run fmt
-        run: cargo +nightly fmt --all -- --check
-
       - name: Run clippy
-        run: cargo clippy --all-targets -- -D warnings
+        run: make clippy
 
-      - name: Build project
-        run: cargo build --verbose
+  check_features:
+    name: Check Features
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-hack-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            cargo-hack-
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-hack
+      - name: Check all feature combinations
+        run: make check-features
 
-      - name: Run tests
-        run: cargo test --all --verbose
+  cargo_test:
+    name: Cargo Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+      - name: Test
+        run: make test

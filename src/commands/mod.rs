@@ -1,14 +1,14 @@
-use std::process::{ExitCode, Termination};
-
-use console::style;
-
-use crate::{
-    commands::{
-        account::AccountCommand, cluster::ClusterCommand, config::ConfigCommand,
-        stake::StakeCommand, vote::VoteCommand,
+use {
+    crate::{
+        commands::{
+            account::AccountCommand, cluster::ClusterCommand, config::ConfigCommand,
+            stake::StakeCommand, vote::VoteCommand,
+        },
+        context::ScillaContext,
+        error::ScillaResult,
     },
-    context::ScillaContext,
-    error::ScillaResult,
+    console::style,
+    std::process::{ExitCode, Termination},
 };
 
 pub mod account;

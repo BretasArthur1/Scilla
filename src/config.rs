@@ -1,8 +1,9 @@
-use serde::{Deserialize, Serialize};
-use solana_commitment_config::CommitmentLevel;
-use std::{env::home_dir, fs, path::PathBuf};
-
-use crate::error::ScillaError;
+use {
+    crate::error::ScillaError,
+    serde::{Deserialize, Serialize},
+    solana_commitment_config::CommitmentLevel,
+    std::{env::home_dir, fs, path::PathBuf},
+};
 
 pub const SCILLA_CONFIG_RELATIVE_PATH: &str = ".config/scilla.toml";
 
