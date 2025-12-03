@@ -4,3 +4,136 @@
 Instead of manually typing long CLI flags, Scilla uses intelligent prompting to help you build and execute commands seamlessly — making the workflow far less tedious.
 
 With Scilla, you can easily **inspect on-chain data**, **query cluster state**, **send transactions**, and perform a wide range of Solana development and debugging tasks — all from a unified interactive shell.
+
+---
+
+## **Quick Start**
+
+### **1. Install**
+
+```bash
+# Clone and build
+git clone https://github.com/blueshift-gg/Scilla
+cd Scilla
+cargo install --path .
+```
+
+### **2. Configure**
+
+```bash
+make config-file
+```
+
+This will generate a default config file with the following parameters.
+
+```toml
+rpc-url = "https://api.mainnet-beta.solana.com"
+keypair-path = "~/.config/solana/id.json"
+commitment-level = "confirmed"
+```
+
+You can then edit the generated `~/.scilla/config.toml` file to set your desired RPC endpoint, keypair path, and commitment level.
+
+### **3. Run**
+
+```bash
+scilla
+```
+
+---
+
+## **Usage**
+
+Launch Scilla and you'll see:
+
+```
+⚡ Scilla — Hacking Through the Solana Matrix
+
+? Choose a command group:
+  > Account
+    Cluster
+    Stake
+    Vote
+    ScillaConfig
+    Exit
+```
+
+Navigate using arrow keys, press Enter to select.
+
+---
+
+## **Commands**
+
+### **Account**
+
+Manage wallets and on-chain accounts.
+
+| Command                 | What it does                         | Status |
+| ----------------------- | ------------------------------------ | ------ |
+| **Fetch Account**       | Get full account info for any pubkey | Done   |
+| **Balance**             | Check SOL balance                    | Done   |
+| **Transfer**            | Send SOL to another wallet           | Todo   |
+| **Airdrop**             | Request devnet/testnet SOL           | Done   |
+| **Confirm Transaction** | Check if a transaction landed        | Todo   |
+| **Largest Accounts**    | See the biggest accounts on cluster  | Todo   |
+| **Nonce Account**       | Inspect or manage durable nonces     | Todo   |
+
+**Example flow:**
+
+```
+? Choose a command group: Account
+? Account Command: Balance
+? Enter Pubkey: 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
+⠴ Get Account Balance
+Account balance in SOL:
+Balance: 1.5 SOL
+```
+
+---
+
+### **Cluster**
+
+Query the state of the Solana cluster.
+
+| Command             | What it does                      | Status |
+| ------------------- | --------------------------------- | ------ |
+| **Epoch Info**      | Current epoch and progress        | Todo   |
+| **Current Slot**    | Latest confirmed slot             | Todo   |
+| **Block Height**    | Current block height              | Todo   |
+| **Block Time**      | Timestamp for a specific block    | Todo   |
+| **Validators**      | List active validators            | Todo   |
+| **Cluster Version** | Solana version running on cluster | Todo   |
+| **Supply Info**     | Total and circulating supply      | Todo   |
+| **Inflation**       | Current inflation parameters      | Todo   |
+
+---
+
+### **Stake**
+
+Full stake account lifecycle management.
+
+| Command        | What it does                        | Status |
+| -------------- | ----------------------------------- | ------ |
+| **Create**     | Create a new stake account          | Todo   |
+| **Delegate**   | Delegate stake to a validator       | Todo   |
+| **Deactivate** | Begin stake cooldown                | Todo   |
+| **Withdraw**   | Withdraw SOL from deactivated stake | Todo   |
+| **Merge**      | Combine two stake accounts          | Todo   |
+| **Split**      | Split stake into multiple accounts  | Todo   |
+| **Show**       | Display stake account details       | Todo   |
+| **History**    | View stake account history          | Todo   |
+
+---
+
+### **Vote**
+
+For validators managing vote accounts.
+
+| Command                 | What it does                  | Status |
+| ----------------------- | ----------------------------- | ------ |
+| **Create Vote Account** | Initialize a new vote account | Todo   |
+| **Authorize Voter**     | Change authorized voter       | Todo   |
+| **Withdraw from Vote**  | Withdraw from vote account    | Todo   |
+| **Show Vote Account**   | Display vote account info     | Todo   |
+
+---

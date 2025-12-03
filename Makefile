@@ -31,6 +31,19 @@ test:
 	@$(MAKE) build
 	@cargo test --all-features
 
+config-file:
+	@if [ ! -f ~/.config/scilla.toml ]; then  \
+		  echo "Creating default config file at ~/.config/scilla.toml if it doesn't exist..."; \
+			echo 'rpc-url = "https://api.mainnet-beta.solana.com"' > ~/.config/scilla.toml; \
+			echo 'keypair-path = "'$$HOME'/.config/solana/id.json"' >> ~/.config/scilla.toml; \
+			echo 'commitment-level = "confirmed"' >> ~/.config/scilla.toml; \
+	else \
+			echo "Config file already exists at ~/.config/scilla.toml"; \
+	fi
+	@echo ""
+	@echo "Current contents of the config file:"
+	@cat ~/.config/scilla.toml
+
 # Run all checks in sequence
 all-checks:
 	@echo "Running all checks..."
