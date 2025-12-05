@@ -1889,6 +1889,7 @@ name = "scilla"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bincode",
  "chrono",
  "comfy-table",
  "console",
@@ -1897,6 +1898,7 @@ dependencies = [
  "serde",
  "solana-commitment-config",
  "solana-keypair",
+ "solana-nonce",
  "solana-pubkey 4.0.0",
  "solana-rpc-client",
  "solana-rpc-client-api",
