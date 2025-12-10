@@ -8,13 +8,12 @@ use {
     solana_pubkey::Pubkey,
 };
 
-use crate::{ScillaContext, ScillaResult, commands::CommandExec};
 /// Commands related to validator/vote account operations
 #[derive(Debug, Clone)]
 pub enum VoteCommand {
     CreateVoteAccount,
     AuthorizeVoter,
-    WithdrawFromVote,
+    WithdrawFromVoteAccount,
     ShowVoteAccount,
     GoBack,
 }
@@ -82,6 +81,10 @@ async fn show_vote_account(ctx: &ScillaContext, pubkey: &Pubkey) -> anyhow::Resu
                     Cell::new(format!("{}", va.last_vote)),
                 ])
                 .add_row(vec![
+                    Cell::new("Root Slot"),
+                    Cell::new(format!("{}", va.root_slot)),
+                ])
+                .add_row(vec![
                     Cell::new("Status"),
                     Cell::new(
                         if vote_accounts
@@ -109,25 +112,4 @@ async fn show_vote_account(ctx: &ScillaContext, pubkey: &Pubkey) -> anyhow::Resu
     }
 
     Ok(())
-    pub fn description(&self) -> &'static str {
-        match self {
-            VoteCommand::CreateVoteAccount => "Initialize a new vote account",
-            VoteCommand::AuthorizeVoter => "Change authorized voter",
-            VoteCommand::WithdrawFromVote => "Withdraw from vote account",
-            VoteCommand::ShowVoteAccount => "Display vote account info",
-            VoteCommand::GoBack => "Go back",
-        }
-    }
-}
-
-impl VoteCommand {
-    pub async fn process_command(&self, _ctx: &ScillaContext) -> ScillaResult<()> {
-        match self {
-            VoteCommand::CreateVoteAccount => todo!(),
-            VoteCommand::AuthorizeVoter => todo!(),
-            VoteCommand::WithdrawFromVote => todo!(),
-            VoteCommand::ShowVoteAccount => todo!(),
-            VoteCommand::GoBack => Ok(CommandExec::GoBack),
-        }
-    }
 }
