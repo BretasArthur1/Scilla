@@ -7,19 +7,20 @@ use {
         prompt::prompt_data,
         ui::{print_error, show_spinner},
     },
-    comfy_table::{Cell, Table, presets::UTF8_FULL},
+    comfy_table::{presets::UTF8_FULL, Cell, Table},
     console::style,
     inquire::Select,
     solana_nonce::versions::Versions,
     solana_pubkey::Pubkey,
     solana_rpc_client_api::config::{RpcLargestAccountsConfig, RpcLargestAccountsFilter},
     solana_signature::Signature,
+    std::ops::Div,
 };
 
 /// Commands related to wallet or account management
 #[derive(Debug, Clone)]
 pub enum AccountCommand {
-    Fetch,
+    FetchAccount,
     Balance,
     Transfer,
     Airdrop,
@@ -32,13 +33,13 @@ pub enum AccountCommand {
 impl AccountCommand {
     pub fn description(&self) -> &'static str {
         match self {
-            AccountCommand::Fetch => "Fetch Account info",
-            AccountCommand::Balance => "Get Account Balance",
-            AccountCommand::Transfer => "Transfer SOL",
-            AccountCommand::Airdrop => "Request Airdrop",
-            AccountCommand::ConfirmTransaction => "Confirm a pending transaction",
-            AccountCommand::LargestAccounts => "Fetch cluster’s largest accounts",
-            AccountCommand::NonceAccount => "Inspect or manage nonce accounts",
+            AccountCommand::FetchAccount => "Fetch Account",
+            AccountCommand::Balance => "Check SOL balance",
+            AccountCommand::Transfer => "Send SOL to another wallet",
+            AccountCommand::Airdrop => "Request devnet/testnet SOL",
+            AccountCommand::ConfirmTransaction => "Check if a transaction landed",
+            AccountCommand::LargestAccounts => "See the biggest accounts on cluster",
+            AccountCommand::NonceAccount => "Inspect or manage durable nonces",
             AccountCommand::GoBack => "Go back",
         }
     }
@@ -47,8 +48,8 @@ impl AccountCommand {
 impl AccountCommand {
     pub async fn process_command(&self, ctx: &ScillaContext) -> ScillaResult<()> {
         match self {
-            AccountCommand::Fetch => {
-                let pubkey: Pubkey = prompt_data("Enter Pubkey :")?;
+            AccountCommand::FetchAccount => {
+                let pubkey: Pubkey = prompt_data("Enter Pubkey:")?;
                 show_spinner(self.description(), fetch_acc_data(ctx, &pubkey)).await?;
             }
             AccountCommand::Balance => {
@@ -75,7 +76,7 @@ impl AccountCommand {
             AccountCommand::GoBack => {
                 return Ok(CommandExec::GoBack);
             }
-        };
+        }
 
         Ok(CommandExec::Process(()))
     }
@@ -88,7 +89,7 @@ async fn request_sol_airdrop(ctx: &ScillaContext) -> anyhow::Result<()> {
             println!(
                 "{} {}",
                 style("Airdrop requested successfully!").green().bold(),
-                style(format!("Signature: {}", signature)).cyan()
+                style(format!("Signature: {signature}")).cyan()
             );
         }
         Err(err) => {
@@ -105,7 +106,7 @@ async fn fetch_acc_data(ctx: &ScillaContext, pubkey: &Pubkey) -> anyhow::Result<
     println!(
         "{}\n{}",
         style("Account info:").green().bold(),
-        style(format!("{:#?}", acc)).cyan()
+        style(format!("{acc:#?}")).cyan()
     );
 
     Ok(())
@@ -118,7 +119,7 @@ async fn fetch_account_balance(ctx: &ScillaContext, pubkey: &Pubkey) -> anyhow::
     println!(
         "{}\n{}",
         style("Account balance in SOL:").green().bold(),
-        style(format!("{:#?}", acc_balance)).cyan()
+        style(format!("{acc_balance:#?}")).cyan()
     );
 
     Ok(())
